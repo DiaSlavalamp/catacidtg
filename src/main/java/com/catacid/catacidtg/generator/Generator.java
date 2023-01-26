@@ -11,23 +11,27 @@ import java.util.stream.Stream;
 
 @Component
 public class Generator {
+    int randomColor = 0;
+    static String ge;
 
-//    static String ge;
-//
-//    static String bv;
-//
-//    static String kh;
+    static String bv;
 
+    static String kh;
+
+    //книги в длинных String
+    private static List<String> books;
+
+    //лист с книгами порезаными на строчки
     private static List<List<String>> contentStringsList;
 
     public void setContent(List<File> contentList) {
 
         contentStringsList = new ArrayList<>();
+        books = new ArrayList<>();
 
         for (File file : contentList) {
             try {
                 String bookStr = new String(Files.readAllBytes(file.toPath()));
-
 
                 // String root = System.getProperty("user.dir");
                 //conferenceBot.gen.ge = new String(Files.readAllBytes(Paths.get(rootPath + "\\content\\Sorokin_Vladimir_-_Serdca_chetyrex.txt")));
@@ -37,10 +41,11 @@ public class Generator {
                 //String[] array = ge.split("(?<=\\.)(.*)(?=[А-Я])");//между точкой и большой буквой выделяет пробел и по нему режет
 
                 //String[] array = splitBook()
+                books.add(bookStr);
                 contentStringsList.add(splitBook(bookStr));
 
                 String sd = genBookAnswer("нужно");
-               // System.out.println(bookStr);//todo это лог в консоль
+                // System.out.println(bookStr);//todo это лог в консоль
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -56,52 +61,123 @@ public class Generator {
 //        }
     }
 
-//старый метод
-//    public static String getGreenMessage(String words) {
-//
-//        String[] sad = words.split(" ");
-//        String word = sad[sad.length - 1];
-//
-//        System.out.println(word);
-//        try {
-//            String anser;
-//
-//
-//            String[] ss = ge.split(word);
-//
-//
-//            if (ss.length < 2) {
-//                System.out.println("1 не найдено");
-//                ss = bv.split(word);
-//
-//
-//                if (ss.length < 2) {
-//                    System.out.println("2 не найдено");
-//                    ss = kh.split(word);
-//
-//
-//                    String[] sss = ss[1].split("\n");
-//                    anser = word + sss[0];
-//                    return anser;
-//                }
-//
-//
-//                String[] sss = ss[1].split("\n");
-//                anser = word + sss[0];
-//                return anser;
-//            }
-//
-//            String[] sss = ss[1].split("\n");
-//            anser = word + sss[0];
-//            return anser;
-//
-//        } catch (Exception e) {
-//            System.out.println("3 не найдено");
-//            e.printStackTrace();
-//        }
-//        return "Дедушка тебя не понимает \uD83C\uDF85";
-//    }
+    //старый метод
+    public static String getGreenMessage(String words) {
 
+        String[] wordsArray = words.split(" ");
+        String lastWord = wordsArray[wordsArray.length - 1];
+
+        System.out.println(lastWord);
+        try {
+            String anser;
+
+
+            String[] ss = ge.split(lastWord);
+
+
+            if (ss.length < 2) {
+                System.out.println("1 не найдено");
+                ss = bv.split(lastWord);
+
+
+                if (ss.length < 2) {
+                    System.out.println("2 не найдено");
+                    ss = kh.split(lastWord);
+
+
+                    String[] sss = ss[1].split("\n");
+                    anser = lastWord + sss[0];
+                    return anser;
+                }
+
+
+                String[] sss = ss[1].split("\n");
+                anser = lastWord + sss[0];
+                return anser;
+            }
+
+            String[] sss = ss[1].split("\n");
+            anser = lastWord + sss[0];
+            return anser;
+
+        } catch (Exception e) {
+            System.out.println("3 не найдено");
+            e.printStackTrace();
+        }
+        return "Дедушка тебя не понимает \uD83C\uDF85";
+    }
+
+
+    public String getBookAnswerMarkovaChain(String inputWord, int resultIterationCount, int wordsTrysCount, boolean ifFailedAttemptNextWordGet) {//добавить сюда енум nextWord nextBook
+        String result = "";
+        for(int i = 0; i < resultIterationCount; i++) {
+            result += getMarcova(inputWord, wordsTrysCount, ifFailedAttemptNextWordGet);
+        }
+        return result;
+    }
+    //todo если слово не находится то надо брать следующее в тексте просто
+    private String getMarcova(String inputWords, int wordsTrysCount, boolean ifFailedAttemptNextWordGet){//файлед атемпт нужно в предыдуший метод
+        String result = inputWords;
+
+
+        String[] wordsArray = inputWords.split(" ");
+        String lastWord = wordsArray[wordsArray.length - 1];
+
+
+
+
+        //режем книги в местах совпадений
+        for (int i = 0; i < books.size(); i++) {
+
+            //мешает книги и берет первую
+            Collections.shuffle(books);
+            //ищет совпадение
+            String matchs[] = books.get(i).split(lastWord);
+            //если не нашел в книге то берет следующую
+            if (matchs.length < 2) continue;
+
+
+
+            ArrayList<String> matchsList = new ArrayList<String>(Arrays.asList(matchs));
+            //убираем первый эллемент, он не является совпадением
+            matchsList.remove(0);
+            Collections.shuffle(matchsList);//рандом строчек совпадений
+
+            //режем первое попавшееся совпадение по словам
+            String firstMatch = matchsList.get(0);
+            String[] words = firstMatch.split(" ");
+
+            //конкатенируем пока не достигнем лимита или следующей втречи этого слова (нужно фиксануть это и добавить чтобы он начинал добавлять даже после второго совпадения)
+            for (int iii = 0; iii < words.length; iii++) {
+                String nextWord = words[iii];
+                int r = getRandomColor();
+                String randomColorPrefix =  "\033[0m" + "\033[" + r + "m ";
+                result += " " + randomColorPrefix + nextWord;
+                if (iii == wordsTrysCount) return result;
+            }
+            System.out.println("это совпадение закончилось, слово встречено снова (ПОФИКСИТЬ)");
+            return result;
+
+            //  }
+
+        }//todo блен а ведь еще может быть так что он одни и те же слова будет драть по совпадениию если слово не найдется(
+        System.out.println("не нашел совпадений ни в одной книге(");
+        //рекурсивная попытка которая просто выдает следующее слово идущее в тексте фактически. НО тут другой трайкаунт (1) который означает возвращение следующего слова в данном случе (это костыль)
+        result += getMarcova(inputWords, 1, ifFailedAttemptNextWordGet);
+        return result;
+    }
+
+    int getRandomColor(){
+
+        Random random = new Random();
+        int r = random.nextInt(8)+30;
+        while(r == randomColor | r == randomColor-1 | r == randomColor+1 | r == randomColor-2| r == randomColor+2){
+            r = random.nextInt(8)+30;
+//r = getRandomColor();
+        }
+        this.randomColor = r;
+        return r;
+    }
 
     private ArrayList<String> splitBook(String book) {
         book.replace("\r", "\n");

@@ -34,9 +34,16 @@ public class BotInitializer {
 
       //  String answer = gen.genBookAnswer("сука");
 
-        String answer2 = textr.generateOne(5,5);
+        String f = gen.getBookAnswerMarkovaChain("сука", 15,5,false);
+        System.out.println(f);
 
-        System.out.println(answer2);
+//        String answer222 = textr.generateOne(1901,10);
+//        String answer22 = textr.generateOne(801,10);
+//        String answer2 = textr.generateOne(501,10);
+//
+//        System.out.println(answer2);
+//        System.out.println(answer22);
+//        System.out.println(answer222);
         //addContent();
     }
 
