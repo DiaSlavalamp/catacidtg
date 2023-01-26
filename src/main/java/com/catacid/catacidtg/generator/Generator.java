@@ -44,6 +44,7 @@ public class Generator {
                 bookStr = bookStr.replaceAll("\r", "\n");
                 bookStr = bookStr.replaceAll("\n\n", "\n");
                 bookStr = bookStr.replaceAll("\n", " ");//todo добавить в метод clean
+                //todo toLowerCase добавить
                 books.add(bookStr);
                 contentStringsList.add(splitBook(bookStr));
 
@@ -125,57 +126,58 @@ public class Generator {
     }
     //todo если слово не находится то надо брать следующее в тексте просто
     private String getMarcova(String inputWords, int wordsTrysCount, boolean ifFailedAttemptNextWordGet){//файлед атемпт нужно в предыдуший метод
-
         String result = "";
+        try {
 
-        String[] wordsArray = inputWords.split(" ");
-        String lastWord = wordsArray[wordsArray.length - 1];
+            String[] wordsArray = inputWords.split(" ");
+            String lastWord = wordsArray[wordsArray.length - 1];
 
-        Collections.shuffle(books);
-        //режем книги в местах совпадений
-        for (int i = 0; i < books.size(); i++) {
+            Collections.shuffle(books);
+            //режем книги в местах совпадений
+            for (int i = 0; i < books.size(); i++) {
 
-            //мешает книги и берет первую
+                //мешает книги и берет первую
 
-            //ищет совпадение
-            String matchs[] = books.get(i).split(lastWord);
-            //если не нашел в книге то берет следующую
-            if (matchs.length < 2) continue;
-
-
-
-            ArrayList<String> matchsList = new ArrayList<String>(Arrays.asList(matchs));
-            //убираем первый эллемент, он не является совпадением
-            matchsList.remove(0);
-            Collections.shuffle(matchsList);//рандом строчек совпадений
-
-            //режем первое попавшееся совпадение по словам
-            String firstMatch = matchsList.get(0);
-            String[] words = firstMatch.split(" ");
-
-            //добавляем цвет и конкатенируем пока не достигнем лимита или следующей втречи этого слова (нужно фиксануть это и добавить чтобы он начинал добавлять даже после второго совпадения)
-            int r = getRandomColor();
-            String randomColorPrefix =  "\033[0m" + "\033[" + r + "m ";
-            result += randomColorPrefix;
-            for (int iii = 0; iii < words.length; iii++) {
-                String nextWord = words[iii];
+                //ищет совпадение
+                String matchs[] = books.get(i).split(lastWord);
+                //если не нашел в книге то берет следующую
+                if (matchs.length < 2) continue;
 
 
-                result += " "+ nextWord;
-                if (iii > wordsTrysCount) {
-                    return result;
+                ArrayList<String> matchsList = new ArrayList<String>(Arrays.asList(matchs));
+                //убираем первый эллемент, он не является совпадением
+                matchsList.remove(0);
+                Collections.shuffle(matchsList);//рандом строчек совпадений
+
+                //режем первое попавшееся совпадение по словам
+                String firstMatch = matchsList.get(0);
+                String[] words = firstMatch.split(" ");
+
+                //добавляем цвет и конкатенируем пока не достигнем лимита или следующей втречи этого слова (нужно фиксануть это и добавить чтобы он начинал добавлять даже после второго совпадения)
+                int r = getRandomColor();
+                String randomColorPrefix = "\033[0m" + "\033[" + r + "m ";
+                result += randomColorPrefix;
+                for (int iii = 0; iii < words.length; iii++) {
+
+                    if (iii > wordsTrysCount) {
+                        return result;
+                    }
+                    String nextWord = words[iii];
+                    result += " " + nextWord;
                 }
-            }
-            System.out.println("failed (ПОФИКСИТЬ)");//это совпадение закончилось, слово встречено снова
+                System.out.println("failed (ПОФИКСИТЬ)");//это совпадение закончилось, слово встречено снова
+                return result;
+
+                //  }
+
+            }//todo блен а ведь еще может быть так что он одни и те же слова будет драть по совпадениию если слово не найдется(
+            System.out.println("не нашел совпадений ни в одной книге(");
+            //рекурсивная попытка которая просто выдает следующее слово идущее в тексте фактически. НО тут другой трайкаунт (1) который означает возвращение следующего слова в данном случе (это костыль)
+            result += getMarcova(inputWords, 1, ifFailedAttemptNextWordGet);
             return result;
-
-            //  }
-
-        }//todo блен а ведь еще может быть так что он одни и те же слова будет драть по совпадениию если слово не найдется(
-        System.out.println("не нашел совпадений ни в одной книге(");
-        //рекурсивная попытка которая просто выдает следующее слово идущее в тексте фактически. НО тут другой трайкаунт (1) который означает возвращение следующего слова в данном случе (это костыль)
-        result += getMarcova(inputWords, 1, ifFailedAttemptNextWordGet);
-        return result;
+        }finally {
+            return result;
+        }
     }
 
     int getRandomColor(){
