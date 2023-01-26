@@ -41,6 +41,9 @@ public class Generator {
                 //String[] array = ge.split("(?<=\\.)(.*)(?=[А-Я])");//между точкой и большой буквой выделяет пробел и по нему режет
 
                 //String[] array = splitBook()
+                bookStr.replace("\r", "\n");
+                bookStr.replace("\n\n", "\n");
+                bookStr.replace("\n", " ");//todo добавить в метод clean
                 books.add(bookStr);
                 contentStringsList.add(splitBook(bookStr));
 
@@ -147,15 +150,18 @@ public class Generator {
             String firstMatch = matchsList.get(0);
             String[] words = firstMatch.split(" ");
 
-            //конкатенируем пока не достигнем лимита или следующей втречи этого слова (нужно фиксануть это и добавить чтобы он начинал добавлять даже после второго совпадения)
+            //добавляем цвет и конкатенируем пока не достигнем лимита или следующей втречи этого слова (нужно фиксануть это и добавить чтобы он начинал добавлять даже после второго совпадения)
+            int r = getRandomColor();
+            String randomColorPrefix =  "\033[0m" + "\033[" + r + "m ";
+            result += randomColorPrefix;
             for (int iii = 0; iii < words.length; iii++) {
                 String nextWord = words[iii];
-                int r = getRandomColor();
-                String randomColorPrefix =  "\033[0m" + "\033[" + r + "m ";
-                result += " " + randomColorPrefix + nextWord;
+
+
+                result += " "+ nextWord;
                 if (iii == wordsTrysCount) return result;
             }
-            System.out.println("это совпадение закончилось, слово встречено снова (ПОФИКСИТЬ)");
+            System.out.println("failed (ПОФИКСИТЬ)");//это совпадение закончилось, слово встречено снова
             return result;
 
             //  }

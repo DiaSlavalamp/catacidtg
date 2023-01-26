@@ -26,15 +26,15 @@ public class BotInitializer {
         botsApi.registerBot(bot);
 
 
-        Generator gen = new Generator();
+        Generator generator = new Generator();
         String rootPath = System.getProperty("user.dir");
         String contentPath = rootPath + "\\content";
         List<File> content = Arrays.asList(new File(contentPath).listFiles());
-        gen.setContent(content);
+        generator.setContent(content);
 
       //  String answer = gen.genBookAnswer("сука");
 
-        String f = gen.getBookAnswerMarkovaChain("сука", 15,5,false);
+        String f = generator.getBookAnswerMarkovaChain("сука", 15,5,false);
         System.out.println(f);
 
 //        String answer222 = textr.generateOne(1901,10);
