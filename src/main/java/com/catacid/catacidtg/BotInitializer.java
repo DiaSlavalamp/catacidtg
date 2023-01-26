@@ -34,7 +34,7 @@ public class BotInitializer {
 
       //  String answer = gen.genBookAnswer("сука");
 
-        String f = generator.getBookAnswerMarkovaChain("сука", 15,5,false);
+        String f = generator.getBookAnswerMarkovaChain("пизда", 15,5,false, false);
         System.out.println(f);
 
 //        String answer222 = textr.generateOne(1901,10);

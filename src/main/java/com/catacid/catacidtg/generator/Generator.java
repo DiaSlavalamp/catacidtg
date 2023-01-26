@@ -41,9 +41,9 @@ public class Generator {
                 //String[] array = ge.split("(?<=\\.)(.*)(?=[А-Я])");//между точкой и большой буквой выделяет пробел и по нему режет
 
                 //String[] array = splitBook()
-                bookStr.replace("\r", "\n");
-                bookStr.replace("\n\n", "\n");
-                bookStr.replace("\n", " ");//todo добавить в метод clean
+                bookStr = bookStr.replaceAll("\r", "\n");
+                bookStr = bookStr.replaceAll("\n\n", "\n");
+                bookStr = bookStr.replaceAll("\n", " ");//todo добавить в метод clean
                 books.add(bookStr);
                 contentStringsList.add(splitBook(bookStr));
 
@@ -111,29 +111,32 @@ public class Generator {
     }
 
 
-    public String getBookAnswerMarkovaChain(String inputWord, int resultIterationCount, int wordsTrysCount, boolean ifFailedAttemptNextWordGet) {//добавить сюда енум nextWord nextBook
+    public String getBookAnswerMarkovaChain(String inputWord, int resultIterationCount, int wordsTrysCount, boolean ifFailedAttemptNextWordGet, boolean useOneWord) {//добавить сюда енум nextWord nextBook
         String result = "";
+        result += inputWord;
         for(int i = 0; i < resultIterationCount; i++) {
-            result += getMarcova(inputWord, wordsTrysCount, ifFailedAttemptNextWordGet);
+            if(useOneWord) {
+                result += getMarcova(inputWord, wordsTrysCount, ifFailedAttemptNextWordGet);
+            }else {
+                result += getMarcova(result, wordsTrysCount, ifFailedAttemptNextWordGet);
+            }
         }
         return result;
     }
     //todo если слово не находится то надо брать следующее в тексте просто
     private String getMarcova(String inputWords, int wordsTrysCount, boolean ifFailedAttemptNextWordGet){//файлед атемпт нужно в предыдуший метод
-        String result = inputWords;
 
+        String result = "";
 
         String[] wordsArray = inputWords.split(" ");
         String lastWord = wordsArray[wordsArray.length - 1];
 
-
-
-
+        Collections.shuffle(books);
         //режем книги в местах совпадений
         for (int i = 0; i < books.size(); i++) {
 
             //мешает книги и берет первую
-            Collections.shuffle(books);
+
             //ищет совпадение
             String matchs[] = books.get(i).split(lastWord);
             //если не нашел в книге то берет следующую
@@ -159,7 +162,9 @@ public class Generator {
 
 
                 result += " "+ nextWord;
-                if (iii == wordsTrysCount) return result;
+                if (iii > wordsTrysCount) {
+                    return result;
+                }
             }
             System.out.println("failed (ПОФИКСИТЬ)");//это совпадение закончилось, слово встречено снова
             return result;
@@ -186,8 +191,8 @@ public class Generator {
     }
 
     private ArrayList<String> splitBook(String book) {
-        book.replace("\r", "\n");
-        book.replace("\n\n", "\n");//todo это не работает же!!!!
+//        book.replace("\r", "\n");
+//        book.replace("\n\n", "\n");//todo это не работает же!!!!
         //ge.replace("\r","");
         return new ArrayList<>(Arrays.asList(book.split("\n")));
         //return new ArrayList<>(Arrays.asList(ge.split("(?<=\\.)(.*)(?=[А-Я])")));//между точкой и большой буквой выделяет пробел и по нему режет
