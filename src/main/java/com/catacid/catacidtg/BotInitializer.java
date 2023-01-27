@@ -27,16 +27,17 @@ public class BotInitializer {
 
 
         Generator generator = new Generator();
-        String rootPath = System.getProperty("user.dir");
-        String contentPath = rootPath + "\\content";
-        List<File> content = Arrays.asList(new File(contentPath).listFiles());
-        generator.setContent(content);
+//        String rootPath = System.getProperty("user.dir");
+//        String contentPath = rootPath + "\\content";
+//        List<File> content = Arrays.asList(new File(contentPath).listFiles());
+//        generator.setContent(content);
+//
+//      //  String answer = gen.genBookAnswer("сука");
+//
+//        String f = generator.getBookAnswerMarkovaChain("шизо", 100,2,false, false);
+//        System.out.println(f);
 
-      //  String answer = gen.genBookAnswer("сука");
-
-        String f = generator.getBookAnswerMarkovaChain("шизо", 100,2,false, false);
-        System.out.println(f);
-
+        //todo нужно найти базу содержаний мемов и написать генератор который сможет работать с маленькими файликами по 3-4 слова в духе "другие дети я" и чтобы оно комбинировалось.
 //        String answer222 = textr.generateOne(1901,10);
 //        String answer22 = textr.generateOne(801,10);
 //        String answer2 = textr.generateOne(501,10);
